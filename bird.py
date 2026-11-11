@@ -3,6 +3,9 @@ import random
 import game_framework
 
 
+# 물리 단위 및 기본 상수 (LEC 16 슬라이드 19-23)
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel = 30 cm (약 33.33 px/m)
+
 # 스프라이트 시트 사양 (bird_animation.png: 918 x 506, 5열 x 3행, 총 14프레임)
 SHEET_W, SHEET_H = 918, 506
 COLS, ROWS = 5, 3
@@ -39,9 +42,17 @@ class Bird:
         self.x = 400.0
         self.y = 400.0
         self.frame = 0.0
+        self.dir = 1
+
+        # 실제 조류 비행 속도 모델링 (30.0 ~ 48.0 km/h)
+        self.speed_kmph = 36.0  # 기본 36 km/h = 10 m/s
+        self.speed_mps = (self.speed_kmph * 1000.0 / 3600.0)
+        self.speed_pps = self.speed_mps * PIXEL_PER_METER
 
     def update(self):
-        self.frame = (self.frame + 10.0 * game_framework.frame_time) % TOTAL_FRAMES
+        dt = game_framework.frame_time
+        self.frame = (self.frame + 14.0 * dt) % TOTAL_FRAMES
+        self.x += self.dir * self.speed_pps * dt
 
     def draw(self):
         idx = int(self.frame) % TOTAL_FRAMES
