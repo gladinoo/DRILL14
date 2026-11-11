@@ -3,7 +3,7 @@ import random
 import game_framework
 
 
-# 물리 단위 및 기본 상수 (LEC 16 슬라이드 19-23)
+# 물리 단위 및 기본 상수 (LEC 16 슬라이드 19-28)
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel = 30 cm (약 33.33 px/m)
 
 # 스프라이트 시트 사양 (bird_animation.png: 918 x 506, 5열 x 3행, 총 14프레임)
@@ -49,9 +49,15 @@ class Bird:
         self.speed_mps = (self.speed_kmph * 1000.0 / 3600.0)
         self.speed_pps = self.speed_mps * PIXEL_PER_METER
 
+        # 날갯짓 주기(Wingbeat Cycle) 및 프레임 증가율 계산 (LEC 16 슬라이드 28 공식 대응)
+        # 소년의 1보폭(Stride)에 대응하여, 1회 날갯짓 동안 전진 거리를 3.0m로 모델링
+        distance_per_flap_m = 3.0
+        flaps_per_second = self.speed_mps / distance_per_flap_m
+        self.frames_per_second = flaps_per_second * TOTAL_FRAMES
+
     def update(self):
         dt = game_framework.frame_time
-        self.frame = (self.frame + 14.0 * dt) % TOTAL_FRAMES
+        self.frame = (self.frame + self.frames_per_second * dt) % TOTAL_FRAMES
         self.x += self.dir * self.speed_pps * dt
 
     def draw(self):
