@@ -50,7 +50,6 @@ class Bird:
         self.speed_pps = self.speed_mps * PIXEL_PER_METER
 
         # 날갯짓 주기(Wingbeat Cycle) 및 프레임 증가율 계산 (LEC 16 슬라이드 28 공식 대응)
-        # 소년의 1보폭(Stride)에 대응하여, 1회 날갯짓 동안 전진 거리를 3.0m로 모델링
         distance_per_flap_m = 3.0
         flaps_per_second = self.speed_mps / distance_per_flap_m
         self.frames_per_second = flaps_per_second * TOTAL_FRAMES
@@ -60,7 +59,29 @@ class Bird:
         self.frame = (self.frame + self.frames_per_second * dt) % TOTAL_FRAMES
         self.x += self.dir * self.speed_pps * dt
 
+        # 화면 좌우 경계 도달 시 방향 반전 (Boundary Bounce)
+        half_w = DRAW_W / 2
+        canvas_w = get_canvas_width() if get_canvas_width() > 0 else 1600
+
+        if self.x > canvas_w - half_w:
+            self.x = canvas_w - half_w
+            self.dir = -1
+        elif self.x < half_w:
+            self.x = half_w
+            self.dir = 1
+
     def draw(self):
         idx = int(self.frame) % TOTAL_FRAMES
         left, bottom, width, height = FRAME_COORDS[idx]
-        self.image.clip_draw(left, bottom, width, height, self.x, self.y, DRAW_W, DRAW_H)
+
+        # 비행 방향에 따른 수평 반전 렌더링
+        # 원본 스프라이트는 오른쪽(Right)을 바라보고 있으므로:
+        # 오른쪽 비행(dir=1) 시 원본('', flip 없음), 왼쪽 비행(dir=-1) 시 수평 반전('h')
+        flip = '' if self.dir == 1 else 'h'
+
+        self.image.clip_composite_draw(
+            left, bottom, width, height,
+            0.0, flip,
+            self.x, self.y,
+            DRAW_W, DRAW_H
+        )
