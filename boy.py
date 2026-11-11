@@ -91,9 +91,10 @@ class Run:
 
 class Boy:
     def __init__(self):
-        self.x, self.y = 60, 90
+        self.x, self.y = 100, 90
         self.frame = 0.0
         self.image = load_image('animation_sheet.png')
+        self.font = load_font('ENCR10B.TTF', 16)
         self.idle_started_at = get_time()
         self.dir = 0
         self.face_dir = 1
@@ -168,3 +169,4 @@ class Boy:
 
     def draw(self):
         self.states[self.state].draw(self)
+        self.font.draw(self.x - 60, self.y + 50, f'(Time: {get_time():.2f})', (255, 255, 0))
