@@ -61,9 +61,9 @@ class Bird:
         half_w = DRAW_W / 2
         canvas_w = get_canvas_width() if get_canvas_width() > 0 else 1600
 
-        # 1. 위치 설정: 화면 전체 하늘 고도(y: 260 ~ 550)에 랜덤 배치
+        # 1. 위치 설정: 소년(y=90)의 위쪽 하늘 고도(y: 300 ~ 540)에 랜덤 배치
         self.x = x if x is not None else random.uniform(half_w + 50, canvas_w - half_w - 50)
-        self.y = y if y is not None else random.uniform(260.0, 540.0)
+        self.y = y if y is not None else random.uniform(300.0, 540.0)
 
         # 2. 비행 방향 설정 (1: 오른쪽 비행, -1: 왼쪽 비행)
         self.dir = dir if dir is not None else random.choice([-1, 1])
